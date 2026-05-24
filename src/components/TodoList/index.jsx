@@ -1,5 +1,12 @@
 import { useState }  from "react"
 
+import {
+  useGetTodosQuery,
+  useAddTodoMutation,
+  useUpdateTodoMutation,
+  useDeleteTodoMutation,
+} from '../../todoApi';
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -11,21 +18,24 @@ function TodoList() {
   const [newTodo, setNewTodo] = useState("");
   // const [selectedFilter, setSelectedFilter] = useState<"all" | "pending" | "completed">("all");
   const [selectedFilter, setSelectedFilter] = useState("all");
+
+  // Queries run automatically on component mount
+  const { data: todos, isLoading, isError, error } = useGetTodosQuery();
+
+  console.log('log ===> todos', todos);
   
 
-  const todos = [];
+  // Mutations return a trigger function and an object with status flags
+  const [addTodo] = useAddTodoMutation();
+  const [updateTodo] = useUpdateTodoMutation();
+  const [deleteTodo] = useDeleteTodoMutation();
 
-  
-  const handleAddTodo = (e) => {
+  const handleAddTodo = async (e) => {
     e.preventDefault();
     if (newTodo.trim() === "") return;
 
-    const todoItem = {
-      text: newTodo,
-      isCompleted: false,
-    }
-
     // Add the new todo item to the list
+    await addTodo({text: newTodo});
     setNewTodo("");
   }
 
